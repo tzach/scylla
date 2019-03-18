@@ -61,6 +61,7 @@
 #include "column_translation.hh"
 #include "stats.hh"
 #include "utils/observable.hh"
+#include "sstables/shareable_components.hh"
 
 #include <seastar/util/optimized_optional.hh>
 
@@ -446,15 +447,6 @@ public:
     auto sstable_write_io_check(Func&& func, Args&&... args) const {
         return do_io_check(_write_error_handler, func, std::forward<Args>(args)...);
     }
-
-    // Immutable components that can be shared among shards.
-    struct shareable_components {
-        sstables::compression compression;
-        utils::filter_ptr filter;
-        sstables::summary summary;
-        sstables::statistics statistics;
-        std::optional<sstables::scylla_metadata> scylla_metadata;
-    };
 private:
     size_t sstable_buffer_size;
 
@@ -906,7 +898,7 @@ public:
 // contains data for loading a sstable using components shared by a single shard;
 // can be moved across shards
 struct foreign_sstable_open_info {
-    foreign_ptr<lw_shared_ptr<sstable::shareable_components>> components;
+    foreign_ptr<lw_shared_ptr<shareable_components>> components;
     std::vector<shard_id> owners;
     seastar::file_handle data;
     seastar::file_handle index;
@@ -917,7 +909,7 @@ struct foreign_sstable_open_info {
 
 // can only be used locally
 struct sstable_open_info {
-    lw_shared_ptr<sstable::shareable_components> components;
+    lw_shared_ptr<shareable_components> components;
     std::vector<shard_id> owners;
     file data;
     file index;
