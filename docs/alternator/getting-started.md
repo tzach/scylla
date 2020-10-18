@@ -22,6 +22,19 @@ This section will guide you through the steps for setting up the cluster:
    the image, containing the SSL certificate and key to use.
 
 ## Testing Scylla's DynamoDB API support:
+
+### Connecting to Scylla Alternator with AWS CLI
+
+[AWS CLI](https://aws.amazon.com/cli/) AWS Command Line Interface (CLI) is a unified tool to manage your AWS services, in particular, DynamoDB.
+You can use AWS CLI to work with Alternator, either locally, remotely, or on Scylla Cloud, only using the **endpoint-url** option. 
+
+For example, the following use AWS CLI to create a table on a local ALternator instance on IP *127.0.0.1:8000*
+
+```
+aws  --endpoint-url 'http://127.0.0.1:8000'  dynamodb create-table --table-name IsoMusicForbid2 --attribute-definitions AttributeName=Artist,AttributeType=S AttributeName=SongTitle,AttributeType=S --key-schema AttributeName=Artist,KeyType=HASH AttributeName=SongTitle,KeyType=RANGE --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 --tags Key=system:write_isolation,Value=forbid_rmw
+```
+
+
 ### Running AWS Tic Tac Toe demo app to test the cluster:
 1. Follow the instructions on the [AWS github page](https://github.com/awsdocs/amazon-dynamodb-developer-guide/blob/master/doc_source/TicTacToe.Phase1.md)
 2. Enjoy your tic-tac-toe game :-)
@@ -95,3 +108,5 @@ print(dynamodb.batch_get_item(RequestItems={
 ```
 
 You should see the record you inserted in step 2 along with some http info printed to screen.
+
+
